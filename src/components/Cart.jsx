@@ -1,8 +1,8 @@
 import React from 'react'
-import Button from "@material-ui/core/Button";
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
+import Button from "@mui/material/Button";
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import { useOutletContext } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import {motion} from 'framer-motion'

@@ -1,7 +1,7 @@
 import React from 'react'
 import Navigation from './Navigation'
-import Badge from "@material-ui/core/Badge";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import Badge from "@mui/material/Badge";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import styled from "styled-components"
 
 
