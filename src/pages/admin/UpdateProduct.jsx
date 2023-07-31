@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import { ProductWrapper, StyleInputs,Image,InputLabel,Button, BackButton, ButtonWrapper} from '../../styling';
 
@@ -16,7 +16,7 @@ const UpdateProduct = () => {
   // Get the id parameter from the URL using useParams from react-router
   const { id } = useParams();
 
-  const URL = 'https://database-ecommerce-production.up.railway.app/'
+  const URL = 'https://db.up.railway.app/'
   const [src, setSrc] = useState({})
 
 
@@ -42,10 +42,11 @@ const UpdateProduct = () => {
         throw new Error('Error fetching product data. Please try again later.');
       }
       setProduct(data);
-      setSrc(`${URL}uploads/${encodeURI(data.image)}`);
+      setSrc(`${URL}uploads/${encodeURI(data?.image) || 'default-image.png'}`);
     } catch (error) {
       console.log(error);
       // display an error message to the user
+      alert(error.message);
       navigate("/admin/manage-products");
     }
   };
@@ -55,9 +56,26 @@ const UpdateProduct = () => {
   // Function to handle changes in the form fields
   const handleChange = (e) => {
     e.preventDefault();
+    const { name, value } = e.target;
+    switch (name) {
+      case 'price':
+        if (isNaN(value) || Number(value) < 0) {
+          alert('Price must be a positive number.');
+          return;
+        }
+        break;
+      case 'quantity':
+        if (isNaN(value) || Number(value) < 0) {
+          alert('Quantity must be a positive number.');
+          return;
+        }
+        break;
+      default:
+        break;
+    }
     setProduct({
       ...product,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
   
@@ -98,7 +116,11 @@ const UpdateProduct = () => {
   
   // Function to handle uploading files
   const handleFiles = (event) => {
-    setFile(event.target.files[0])
+    if (!event.target.files || event.target.files.length === 0) {
+      // handle error
+      alert('Please select a file.');
+      return;
+    }
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -113,6 +135,16 @@ const UpdateProduct = () => {
       // handle error
       alert('Error reading file.');
     };
+    if (file.size > 2 * 1024 * 1024) {
+      // handle error
+      alert('File size must be less than 2MB.');
+      return;
+    }
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      // handle error
+      alert('File type must be JPEG or PNG.');
+      return;
+    }
   };
   
   // Render the component
@@ -134,12 +166,12 @@ const UpdateProduct = () => {
 
         <InputLabel>
           Title:
-          <input type="text" name="title" value={product.title || ""} onChange={handleChange} required/>
+          <input type="text" name="title" value={product.title || ""} onChange={handleChange} />
         </InputLabel>
 
         <InputLabel>
           Price:
-          <input type="text" name="price" value={product.price || ""} onChange={handleChange} required />
+          <input type="text" name="price" value={product.price || ""} onChange={handleChange} />
         </InputLabel>
 
         <InputLabel>
@@ -150,7 +182,7 @@ const UpdateProduct = () => {
 
         <InputLabel>
           Quantity:
-          <input type="text" name="quantity" value={product.quantity} onChange={handleChange} required />
+          <input type="text" name="quantity" value={product.quantity} onChange={handleChange} />
         </InputLabel>
 
         {/* Add a link to navigate back to the manage-products page */}
